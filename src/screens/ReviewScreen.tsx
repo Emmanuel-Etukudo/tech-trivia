@@ -17,7 +17,7 @@ export default function ReviewScreen() {
 
   const handleBackToHome = () => {
     resetQuiz();
-    router.replace("/");
+    router.dismissTo("/");
   };
 
   const handleRetakeQuiz = () => {
