@@ -32,6 +32,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "85162905-5fc1-4f37-b044-795c237c46d2"
+      }
+    },
+    "owner": "etukz"
   }
 }
