@@ -11,6 +11,7 @@ export interface QuizContextType {
     timeTaken: number
   ) => void;
   nextQuestion: () => void;
+  previousQuestion: () => void;
   markAsUnanswered: (questionId: number) => void;
   completeQuiz: () => void;
   resetQuiz: () => void;
@@ -118,6 +119,20 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   /**
+   * Move to the last question
+   */
+  const previousQuestion = () => {
+    setQuizState((prev) => {
+      const nextIndex = prev.currentQuestionIndex - 1;
+
+      return {
+        ...prev,
+        currentQuestionIndex: nextIndex,
+      };
+    });
+  };
+
+  /**
    * Complete the quiz and calculate final score
    */
   const completeQuiz = () => {
@@ -160,6 +175,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({
     quizState,
     answerQuestion,
     nextQuestion,
+    previousQuestion,
     markAsUnanswered,
     completeQuiz,
     resetQuiz,
