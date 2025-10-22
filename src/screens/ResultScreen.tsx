@@ -76,13 +76,6 @@ export default function ResultScreen() {
             <Text style={styles.restartButtonText}>Restart Quiz</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Footer Message */}
-        <Text style={styles.footerText}>
-          {percentage >= 70
-            ? "Excellent work! Keep it up! 🎯"
-            : "Practice makes perfect! Try again! 💪"}
-        </Text>
       </View>
     </SafeAreaView>
   );

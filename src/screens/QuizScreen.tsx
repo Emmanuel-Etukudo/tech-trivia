@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, SafeAreaView, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useQuiz } from "@/context/QuizContext";
@@ -25,7 +25,6 @@ const QuizScreen: React.FC = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [timerKey, setTimerKey] = useState(0); // Key to reset timer
   const [timeSpent, setTimeSpent] = useState(TIMER_DURATION);
-  const hasAnswered = useRef(false);
 
   const currentQuestion = quizState.questions[quizState.currentQuestionIndex];
   const isLastQuestion =
@@ -33,30 +32,58 @@ const QuizScreen: React.FC = () => {
 
   // Reset state when question changes
   useEffect(() => {
-    setSelectedAnswer(null);
-    setTimerKey((prev) => prev + 1); // Reset timer
-    setTimeSpent(TIMER_DURATION);
-    hasAnswered.current = false;
-  }, [quizState.currentQuestionIndex]);
+    const currentUserAnswer = quizState.userAnswers.find(
+      (answer) => answer.questionId === currentQuestion?.id
+    );
 
-  // Handle answer selection
+    // If question was already answered (confirmed), restore the state
+    if (currentUserAnswer && currentUserAnswer.selectedAnswer !== null) {
+      setSelectedAnswer(currentUserAnswer.selectedAnswer);
+      // For answered questions, continue with remaining time (or 0 if time expired)
+      const remainingTime = Math.max(
+        0,
+        TIMER_DURATION - currentUserAnswer.timeTaken
+      );
+      setTimeSpent(remainingTime);
+    } else if (
+      currentUserAnswer &&
+      currentUserAnswer.timeTaken >= TIMER_DURATION
+    ) {
+      // Question was unanswered and time has elapsed (user either selected but didn't confirm, or never selected)
+      setSelectedAnswer(null);
+      setTimeSpent(0);
+    } else {
+      // Fresh question - reset everything
+      setSelectedAnswer(null);
+      setTimeSpent(TIMER_DURATION);
+    }
+
+    // Always reset timer key to restart timer component
+    setTimerKey((prev) => prev + 1);
+  }, [
+    quizState.currentQuestionIndex,
+    quizState.userAnswers,
+    currentQuestion?.id,
+  ]);
+
+  // Handle answer selection (visual only, not confirmed yet)
   const handleSelectAnswer = (answerIndex: number) => {
-    if (hasAnswered.current) return; // Prevent multiple selections
+    // Don't allow selection if time has expired
+    if (timeSpent <= 0) return;
 
+    // Only update visual state - answer is not confirmed until navigation/timeout
     setSelectedAnswer(answerIndex);
-    hasAnswered.current = true;
-
-    // Record the answer
-    const timeTaken = TIMER_DURATION - timeSpent;
-    answerQuestion(currentQuestion.id, answerIndex, timeTaken);
   };
 
   // Handle timer timeout
   const handleTimeout = () => {
-    if (hasAnswered.current) return; // Already answered, ignore timeout
-
-    // Mark as unanswered
-    markAsUnanswered(currentQuestion.id);
+    // If an answer was selected, confirm it with the full time taken
+    if (selectedAnswer !== null) {
+      answerQuestion(currentQuestion.id, selectedAnswer, TIMER_DURATION);
+    } else {
+      // No answer was selected, mark as unanswered
+      markAsUnanswered(currentQuestion.id);
+    }
 
     // Auto-advance to next question or complete quiz
     if (isLastQuestion) {
@@ -69,6 +96,12 @@ const QuizScreen: React.FC = () => {
 
   // Handle Next button press
   const handleNext = () => {
+    // Confirm the selected answer before moving on
+    if (selectedAnswer !== null) {
+      const timeTaken = TIMER_DURATION - timeSpent;
+      answerQuestion(currentQuestion.id, selectedAnswer, timeTaken);
+    }
+
     if (isLastQuestion) {
       // Complete quiz and go to result screen
       completeQuiz();
@@ -103,8 +136,9 @@ const QuizScreen: React.FC = () => {
         <Timer
           key={timerKey}
           duration={TIMER_DURATION}
+          initialTime={timeSpent}
           onTimeout={handleTimeout}
-          isPaused={hasAnswered.current}
+          isPaused={false}
           onTimeUpdate={handleTimeUpdate}
         />
 
@@ -123,7 +157,7 @@ const QuizScreen: React.FC = () => {
               index={index}
               isSelected={selectedAnswer === index}
               onPress={() => handleSelectAnswer(index)}
-              disabled={hasAnswered.current}
+              disabled={timeSpent <= 0}
             />
           ))}
         </View>
@@ -135,7 +169,14 @@ const QuizScreen: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <BackNavigationButton onBack={previousQuestion} />
+          <BackNavigationButton onBack={() => {
+            // Confirm current answer before going back
+            if (selectedAnswer !== null) {
+              const timeTaken = TIMER_DURATION - timeSpent;
+              answerQuestion(currentQuestion.id, selectedAnswer, timeTaken);
+            }
+            previousQuestion();
+          }} />
           <NavigationButtons
             onNext={handleNext}
             isNextDisabled={selectedAnswer === null}

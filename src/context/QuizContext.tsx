@@ -119,15 +119,20 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   /**
-   * Move to the last question
+   * Move to the previous question
    */
   const previousQuestion = () => {
     setQuizState((prev) => {
-      const nextIndex = prev.currentQuestionIndex - 1;
+      const prevIndex = prev.currentQuestionIndex - 1;
+
+      // Don't go below index 0
+      if (prevIndex < 0) {
+        return prev;
+      }
 
       return {
         ...prev,
-        currentQuestionIndex: nextIndex,
+        currentQuestionIndex: prevIndex,
       };
     });
   };

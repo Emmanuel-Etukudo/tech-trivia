@@ -6,6 +6,7 @@ interface TimerProps {
   onTimeout: () => void; // Callback when timer reaches 0
   isPaused?: boolean;
   onTimeUpdate?: (timeLeft: number) => void; // Callback for time updates
+  initialTime?: number; // Initial time to start with (defaults to duration)
 }
 
 const Timer: React.FC<TimerProps> = ({
@@ -13,16 +14,17 @@ const Timer: React.FC<TimerProps> = ({
   onTimeout,
   isPaused = false,
   onTimeUpdate,
+  initialTime,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(duration);
+  const [timeLeft, setTimeLeft] = useState(initialTime ?? duration);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const hasCalledTimeout = useRef(false);
 
   useEffect(() => {
-    // Reset timer when duration changes (new question)
-    setTimeLeft(duration);
+    // Reset timer when duration or initialTime changes (new question)
+    setTimeLeft(initialTime ?? duration);
     hasCalledTimeout.current = false;
-  }, [duration]);
+  }, [duration, initialTime]);
 
   useEffect(() => {
     if (isPaused) {
