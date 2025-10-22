@@ -77,6 +77,11 @@ const QuizScreen: React.FC = () => {
 
   // Handle timer timeout
   const handleTimeout = () => {
+    // Prevent navigation if quiz is already completed
+    if (quizState.isQuizCompleted) {
+      return;
+    }
+
     // If an answer was selected, confirm it with the full time taken
     if (selectedAnswer !== null) {
       answerQuestion(currentQuestion.id, selectedAnswer, TIMER_DURATION);

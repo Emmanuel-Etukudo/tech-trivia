@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 interface TimerProps {
@@ -19,6 +19,17 @@ const Timer: React.FC<TimerProps> = ({
   const [timeLeft, setTimeLeft] = useState(initialTime ?? duration);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const hasCalledTimeout = useRef(false);
+  const onTimeoutRef = useRef(onTimeout);
+  const onTimeUpdateRef = useRef(onTimeUpdate);
+
+  // Update refs when callbacks change
+  useEffect(() => {
+    onTimeoutRef.current = onTimeout;
+  }, [onTimeout]);
+
+  useEffect(() => {
+    onTimeUpdateRef.current = onTimeUpdate;
+  }, [onTimeUpdate]);
 
   useEffect(() => {
     // Reset timer when duration or initialTime changes (new question)
@@ -40,15 +51,17 @@ const Timer: React.FC<TimerProps> = ({
         const newTime = prev - 1;
 
         // Notify parent of time update
-        if (onTimeUpdate) {
-          onTimeUpdate(newTime);
+        if (onTimeUpdateRef.current) {
+          onTimeUpdateRef.current(newTime);
         }
 
         // When time runs out
         if (newTime <= 0) {
           if (!hasCalledTimeout.current) {
             hasCalledTimeout.current = true;
-            onTimeout();
+            if (onTimeoutRef.current) {
+              onTimeoutRef.current();
+            }
           }
           return 0;
         }
@@ -63,7 +76,7 @@ const Timer: React.FC<TimerProps> = ({
         clearInterval(timerRef.current);
       }
     };
-  }, [isPaused, onTimeout, onTimeUpdate]);
+  }, [isPaused]);
 
   // Determine color based on time left
   const getTimerColor = () => {
