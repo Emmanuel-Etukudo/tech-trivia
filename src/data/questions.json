@@ -1,0 +1,97 @@
+[
+  {
+    "id": 1,
+    "question": "What does HTML stand for?",
+    "options": [
+      "Hyper Text Markup Language",
+      "High Tech Modern Language",
+      "Home Tool Markup Language",
+      "Hyperlinks and Text Markup Language"
+    ],
+    "correctAnswer": 0,
+    "category": "Web Development"
+  },
+  {
+    "id": 2,
+    "question": "Which programming language is known as the 'language of the web'?",
+    "options": ["Python", "JavaScript", "Java", "C++"],
+    "correctAnswer": 1,
+    "category": "Web Development"
+  },
+  {
+    "id": 3,
+    "question": "What does API stand for?",
+    "options": [
+      "Application Programming Interface",
+      "Advanced Programming Integration",
+      "Automated Process Integration",
+      "Application Process Interface"
+    ],
+    "correctAnswer": 0,
+    "category": "Software Development"
+  },
+  {
+    "id": 4,
+    "question": "Which company developed the React JavaScript library?",
+    "options": ["Google", "Microsoft", "Facebook (Meta)", "Amazon"],
+    "correctAnswer": 2,
+    "category": "Web Development"
+  },
+  {
+    "id": 5,
+    "question": "What does CPU stand for?",
+    "options": [
+      "Central Processing Unit",
+      "Computer Personal Unit",
+      "Central Program Utility",
+      "Computer Processing Unit"
+    ],
+    "correctAnswer": 0,
+    "category": "Hardware"
+  },
+  {
+    "id": 6,
+    "question": "Which of these is NOT a valid HTTP status code?",
+    "options": [
+      "404 Not Found",
+      "500 Internal Server Error",
+      "777 Lucky Request",
+      "200 OK"
+    ],
+    "correctAnswer": 2,
+    "category": "Networking"
+  },
+  {
+    "id": 7,
+    "question": "What year was the first iPhone released?",
+    "options": ["2005", "2007", "2009", "2010"],
+    "correctAnswer": 1,
+    "category": "Technology History"
+  },
+  {
+    "id": 8,
+    "question": "Which database is known as a NoSQL document database?",
+    "options": ["MySQL", "PostgreSQL", "MongoDB", "SQLite"],
+    "correctAnswer": 2,
+    "category": "Databases"
+  },
+  {
+    "id": 9,
+    "question": "What does Git primarily help developers with?",
+    "options": [
+      "Database management",
+      "Version control",
+      "Code compilation",
+      "UI design"
+    ],
+    "correctAnswer": 1,
+    "category": "Software Development"
+  },
+  {
+    "id": 10,
+    "question": "Which programming language is used for Android app development natively?",
+    "options": ["Swift", "JavaScript", "Kotlin", "Ruby"],
+    "correctAnswer": 2,
+    "category": "Mobile Development"
+  }
+]
